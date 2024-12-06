@@ -24,7 +24,7 @@ def create_wordsearch_array(puzzle_input):
     return wordsearch
 
 
-def word_finder(y, x, wordsearch):
+def word_finder1(y, x, wordsearch):
     directions = [(-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (-1, 1), (1, -1), (1, 1)]
 
     len_x = len(wordsearch)
@@ -53,8 +53,41 @@ def word_finder(y, x, wordsearch):
     return count
 
 
+def word_finder2(y, x, wordsearch):
+    direction1 = [(-1, -1), (1, 1)]
+    direction2 = [(1, -1), (-1, 1)]
+    len_x = len(wordsearch)
+    len_y = len(wordsearch[0])
+    count = 0
+    letter = set()
+    letter2 = set()
+
+    for x1, y1 in direction1:
+        row = 0
+        col = 0
+        row = x1 + x
+        col = y1 + y
+        if (row >= 0 and col >= 0 and row <= len_x - 1 and col <= len_y - 1) and (wordsearch[col][row] in ["M", "S"]):
+            letter.add(str(wordsearch[col][row]))
+        if 2 == len(letter):
+            for x1, y1 in direction2:
+                row = 0
+                col = 0
+                row = x1 + x
+                col = y1 + y
+                if (row >= 0 and col >= 0 and row <= len_x - 1 and col <= len_y - 1) and (
+                    wordsearch[col][row] in ["M", "S"]
+                ):
+                    letter2.add(str(wordsearch[col][row]))
+                    print(letter2)
+                if 2 == len(letter2):
+                    count += 1
+
+    return count
+
+
 @helper.performance
-#@helper.debug
+@helper.debug
 def solution_p1(data):
     # find_word = "XMAS"
     raw_puzzle = input_clean(data)
@@ -66,16 +99,29 @@ def solution_p1(data):
         x = 0
         for letter in row:
             if "X" == letter:
-                result_list = word_finder(y, x, wordsearch) + result_list
+                result_list = word_finder1(y, x, wordsearch) + result_list
             x += 1
         y += 1
     return result_list
 
 
 @helper.performance
-@helper.debug
+# @helper.debug
 def solution_p2(data):
-    return "null"
+    # find_word = "MAS"
+    raw_puzzle = input_clean(data)
+    wordsearch = create_wordsearch_array(raw_puzzle)
+    x = 0
+    y = 0
+    result_list = 0
+    for row in wordsearch:
+        x = 0
+        for letter in row:
+            if "A" == letter:
+                result_list = word_finder2(y, x, wordsearch) + result_list
+            x += 1
+        y += 1
+    return result_list
 
 
 if __name__ == "__main__":
