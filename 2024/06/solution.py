@@ -1,3 +1,5 @@
+import copy
+
 import helper as helper
 import numpy as np
 
@@ -99,10 +101,43 @@ def solution_p1(data):
             return count
 
 
+def add_obstructions(grid, col_index, row_index):
+    if grid[col_index][row_index] != "^":
+        mod_grid = copy.deepcopy(grid)
+        mod_grid[col_index][row_index] = "#"
+        return mod_grid
+    else:
+        return grid
+
+
 @helper.performance
-@helper.debug
+# @helper.debug
 def solution_p2(data):
-    return "null"
+    grid = create_grid(data)
+    count = 0
+
+    for col_index, col in enumerate(grid):
+        for row_index, item in enumerate(col):
+            mod_grid = add_obstructions(grid, col_index, row_index)
+            turn_history = set()
+            direction = (-1, 0)  # Starting direction up
+            current_cords = locate_start(mod_grid)  # Starting cords
+            grid_status = True
+            while grid_status:
+                safe = check_for_obstructions(current_cords, direction, mod_grid)
+                if safe is True:
+                    current_cords = tuple(a + b for a, b in zip(current_cords, direction))
+                elif safe is False:
+                    direction = turn_right(direction)
+                    different_turn_length = len(turn_history)
+                    turn_history.add(current_cords + direction)
+                    if different_turn_length == len(turn_history):
+                        # print("Loop Found")
+                        count += 1
+                        grid_status = False
+                else:
+                    grid_status = False
+    return count
 
 
 if __name__ == "__main__":
